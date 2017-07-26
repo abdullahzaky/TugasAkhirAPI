@@ -1,0 +1,385 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="WebApiDbModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="ApiKey">
+          <Key>
+            <PropertyRef Name="Email" />
+          </Key>
+          <Property Name="Email" Type="varchar" MaxLength="320" Nullable="false" />
+          <Property Name="Password" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="AppId" Type="varchar" MaxLength="255" />
+          <Property Name="SecretKey" Type="varbinary" MaxLength="64" />
+        </EntityType>
+        <EntityType Name="Enroll">
+          <Key>
+            <PropertyRef Name="IdEnroll" />
+          </Key>
+          <Property Name="IdEnroll" Type="int" Nullable="false" />
+          <Property Name="IdMakul" Type="int" Nullable="false" />
+          <Property Name="IdMahasiswa" Type="int" Nullable="false" />
+          <Property Name="NilaiTotal" Type="float" />
+          <Property Name="GradeNilai" Type="char" MaxLength="1" />
+          <Property Name="PeriodeEnroll" Type="varchar" MaxLength="25" Nullable="false" />
+          <Property Name="Kehadiran" Type="int" />
+          <Property Name="Pertemuan" Type="int" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6013: The table/view 'WebApiDb.dbo.Jadwal' does not have a primary key defined and no valid primary key could be inferred. This table/view has been excluded. To use the entity, you will need to review your schema, add the correct keys, and uncomment it.
+        <EntityType Name="Jadwal">
+          <Property Name="KodeMakul" Type="nvarchar" MaxLength="255" />
+          <Property Name="NamaMakul" Type="nvarchar" MaxLength="255" />
+          <Property Name="Kelas" Type="nvarchar" MaxLength="255" />
+          <Property Name="Sks" Type="float" />
+          <Property Name="Sifat" Type="nvarchar" MaxLength="255" />
+          <Property Name="Rekomendasi Pengambilan" Type="float" />
+        </EntityType>-->
+        <EntityType Name="Mahasiswa">
+          <Key>
+            <PropertyRef Name="IdMahasiswa" />
+          </Key>
+          <Property Name="IdMahasiswa" Type="int" Nullable="false" />
+          <Property Name="NamaMahasiswa" Type="varchar" MaxLength="255" Nullable="false" />
+          <Property Name="Nim" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Angkatan" Type="int" Nullable="false" />
+          <Property Name="Semester" Type="int" />
+          <Property Name="StatusMahasiswa" Type="varchar" MaxLength="25" />
+          <Property Name="Prodi" Type="varchar" MaxLength="100" />
+          <Property Name="AlamatTinggal" Type="varchar" MaxLength="255" />
+          <Property Name="Handphone" Type="varchar" MaxLength="50" />
+          <Property Name="DosenPembimbing" Type="varchar" MaxLength="255" />
+        </EntityType>
+        <EntityType Name="MataKuliah">
+          <Key>
+            <PropertyRef Name="IdMakul" />
+          </Key>
+          <Property Name="IdMakul" Type="int" Nullable="false" />
+          <Property Name="KodeMakul" Type="varchar" MaxLength="15" />
+          <Property Name="NamaMakul" Type="varchar" MaxLength="255" Nullable="false" />
+          <Property Name="Kelas" Type="varchar" MaxLength="25" />
+          <Property Name="Sks" Type="int" />
+          <Property Name="Sifat" Type="varchar" MaxLength="25" />
+          <Property Name="Jadwal" Type="varchar" MaxLength="255" />
+          <Property Name="RekomendasiPengambilan" Type="int" />
+          <Property Name="DosenPengajar" Type="varchar" MaxLength="255" />
+        </EntityType>
+        <EntityType Name="Tokens">
+          <Key>
+            <PropertyRef Name="TokenId" />
+          </Key>
+          <Property Name="TokenId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UserId" Type="int" Nullable="false" />
+          <Property Name="AuthToken" Type="nvarchar" MaxLength="250" Nullable="false" />
+          <Property Name="IssuedOn" Type="datetime" Nullable="false" />
+          <Property Name="ExpiresOn" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="User">
+          <Key>
+            <PropertyRef Name="UserId" />
+          </Key>
+          <Property Name="UserId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UserName" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Password" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="50" />
+        </EntityType>
+        <Association Name="FK_Enroll_Mahasiswa">
+          <End Role="Mahasiswa" Type="Self.Mahasiswa" Multiplicity="1" />
+          <End Role="Enroll" Type="Self.Enroll" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Mahasiswa">
+              <PropertyRef Name="IdMahasiswa" />
+            </Principal>
+            <Dependent Role="Enroll">
+              <PropertyRef Name="IdMahasiswa" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Enroll_MataKuliah">
+          <End Role="MataKuliah" Type="Self.MataKuliah" Multiplicity="1" />
+          <End Role="Enroll" Type="Self.Enroll" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="MataKuliah">
+              <PropertyRef Name="IdMakul" />
+            </Principal>
+            <Dependent Role="Enroll">
+              <PropertyRef Name="IdMakul" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Tokens_User">
+          <End Role="User" Type="Self.User" Multiplicity="1" />
+          <End Role="Tokens" Type="Self.Tokens" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="Tokens">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="WebApiDbModelStoreContainer">
+          <EntitySet Name="ApiKey" EntityType="Self.ApiKey" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Enroll" EntityType="Self.Enroll" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Mahasiswa" EntityType="Self.Mahasiswa" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="MataKuliah" EntityType="Self.MataKuliah" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Tokens" EntityType="Self.Tokens" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="User" EntityType="Self.User" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_Enroll_Mahasiswa" Association="Self.FK_Enroll_Mahasiswa">
+            <End Role="Mahasiswa" EntitySet="Mahasiswa" />
+            <End Role="Enroll" EntitySet="Enroll" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Enroll_MataKuliah" Association="Self.FK_Enroll_MataKuliah">
+            <End Role="MataKuliah" EntitySet="MataKuliah" />
+            <End Role="Enroll" EntitySet="Enroll" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Tokens_User" Association="Self.FK_Tokens_User">
+            <End Role="User" EntitySet="User" />
+            <End Role="Tokens" EntitySet="Tokens" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="WebApiDbModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="Enroll">
+          <Key>
+            <PropertyRef Name="IdEnroll" />
+          </Key>
+          <Property Name="IdEnroll" Type="Int32" Nullable="false" />
+          <Property Name="IdMakul" Type="Int32" Nullable="false" />
+          <Property Name="IdMahasiswa" Type="Int32" Nullable="false" />
+          <Property Name="NilaiTotal" Type="Double" />
+          <Property Name="GradeNilai" Type="String" MaxLength="1" FixedLength="true" Unicode="false" />
+          <Property Name="PeriodeEnroll" Type="String" MaxLength="25" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Kehadiran" Type="Int32" />
+          <Property Name="Pertemuan" Type="Int32" />
+          <NavigationProperty Name="Mahasiswa" Relationship="WebApiDbModel.FK_Enroll_Mahasiswa" FromRole="Enroll" ToRole="Mahasiswa" />
+          <NavigationProperty Name="MataKuliah" Relationship="WebApiDbModel.FK_Enroll_MataKuliah" FromRole="Enroll" ToRole="MataKuliah" />
+        </EntityType>
+        <EntityType Name="Mahasiswa">
+          <Key>
+            <PropertyRef Name="IdMahasiswa" />
+          </Key>
+          <Property Name="IdMahasiswa" Type="Int32" Nullable="false" />
+          <Property Name="NamaMahasiswa" Type="String" MaxLength="255" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Nim" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Angkatan" Type="Int32" Nullable="false" />
+          <Property Name="StatusMahasiswa" Type="String" MaxLength="25" FixedLength="false" Unicode="false" />
+          <Property Name="Prodi" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="AlamatTinggal" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="Handphone" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="DosenPembimbing" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="Enrolls" Relationship="WebApiDbModel.FK_Enroll_Mahasiswa" FromRole="Mahasiswa" ToRole="Enroll" />
+          <Property Name="Semester" Type="Int32" />
+        </EntityType>
+        <EntityType Name="MataKuliah">
+          <Key>
+            <PropertyRef Name="IdMakul" />
+          </Key>
+          <Property Name="IdMakul" Type="Int32" Nullable="false" />
+          <Property Name="KodeMakul" Type="String" MaxLength="15" FixedLength="false" Unicode="false" />
+          <Property Name="NamaMakul" Type="String" MaxLength="255" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Kelas" Type="String" MaxLength="25" FixedLength="false" Unicode="false" />
+          <Property Name="Sks" Type="Int32" />
+          <Property Name="Sifat" Type="String" MaxLength="25" FixedLength="false" Unicode="false" />
+          <Property Name="Jadwal" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="RekomendasiPengambilan" Type="Int32" />
+          <Property Name="DosenPengajar" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="Enrolls" Relationship="WebApiDbModel.FK_Enroll_MataKuliah" FromRole="MataKuliah" ToRole="Enroll" />
+        </EntityType>
+        <EntityType Name="Token">
+          <Key>
+            <PropertyRef Name="TokenId" />
+          </Key>
+          <Property Name="TokenId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UserId" Type="Int32" Nullable="false" />
+          <Property Name="AuthToken" Type="String" MaxLength="250" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="IssuedOn" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="ExpiresOn" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="User" Relationship="Self.FK_Tokens_User" FromRole="Tokens" ToRole="User" />
+        </EntityType>
+        <EntityType Name="User">
+          <Key>
+            <PropertyRef Name="UserId" />
+          </Key>
+          <Property Name="UserId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UserName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Password" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Tokens" Relationship="Self.FK_Tokens_User" FromRole="User" ToRole="Tokens" />
+        </EntityType>
+        <Association Name="FK_Tokens_User">
+          <End Role="User" Type="Self.User" Multiplicity="1" />
+          <End Role="Tokens" Type="Self.Token" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="Tokens">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="WebApiDbEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Enrolls" EntityType="Self.Enroll" />
+          <EntitySet Name="Mahasiswas" EntityType="Self.Mahasiswa" />
+          <EntitySet Name="MataKuliahs" EntityType="Self.MataKuliah" />
+          <EntitySet Name="Tokens" EntityType="Self.Token" />
+          <EntitySet Name="Users" EntityType="Self.User" />
+          <AssociationSet Name="FK_Tokens_User" Association="Self.FK_Tokens_User">
+            <End Role="User" EntitySet="Users" />
+            <End Role="Tokens" EntitySet="Tokens" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Enroll_Mahasiswa" Association="WebApiDbModel.FK_Enroll_Mahasiswa">
+            <End Role="Mahasiswa" EntitySet="Mahasiswas" />
+            <End Role="Enroll" EntitySet="Enrolls" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Enroll_MataKuliah" Association="WebApiDbModel.FK_Enroll_MataKuliah">
+            <End Role="MataKuliah" EntitySet="MataKuliahs" />
+            <End Role="Enroll" EntitySet="Enrolls" />
+          </AssociationSet>
+          <EntitySet Name="ApiKeys" EntityType="WebApiDbModel.ApiKey" />
+        </EntityContainer>
+        <Association Name="FK_Enroll_Mahasiswa">
+          <End Type="WebApiDbModel.Mahasiswa" Role="Mahasiswa" Multiplicity="1" />
+          <End Type="WebApiDbModel.Enroll" Role="Enroll" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Mahasiswa">
+              <PropertyRef Name="IdMahasiswa" />
+            </Principal>
+            <Dependent Role="Enroll">
+              <PropertyRef Name="IdMahasiswa" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Enroll_MataKuliah">
+          <End Type="WebApiDbModel.MataKuliah" Role="MataKuliah" Multiplicity="1" />
+          <End Type="WebApiDbModel.Enroll" Role="Enroll" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="MataKuliah">
+              <PropertyRef Name="IdMakul" />
+            </Principal>
+            <Dependent Role="Enroll">
+              <PropertyRef Name="IdMakul" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="ApiKey">
+          <Key>
+            <PropertyRef Name="Email" />
+          </Key>
+          <Property Name="Email" Type="String" Nullable="false" MaxLength="320" FixedLength="false" Unicode="false" />
+          <Property Name="Password" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="AppId" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="SecretKey" Type="Binary" MaxLength="64" FixedLength="false" />
+        </EntityType>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="WebApiDbModelStoreContainer" CdmEntityContainer="WebApiDbEntities">
+          <EntitySetMapping Name="Enrolls">
+            <EntityTypeMapping TypeName="WebApiDbModel.Enroll">
+              <MappingFragment StoreEntitySet="Enroll">
+                <ScalarProperty Name="IdEnroll" ColumnName="IdEnroll" />
+                <ScalarProperty Name="IdMakul" ColumnName="IdMakul" />
+                <ScalarProperty Name="IdMahasiswa" ColumnName="IdMahasiswa" />
+                <ScalarProperty Name="NilaiTotal" ColumnName="NilaiTotal" />
+                <ScalarProperty Name="GradeNilai" ColumnName="GradeNilai" />
+                <ScalarProperty Name="PeriodeEnroll" ColumnName="PeriodeEnroll" />
+                <ScalarProperty Name="Kehadiran" ColumnName="Kehadiran" />
+                <ScalarProperty Name="Pertemuan" ColumnName="Pertemuan" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Mahasiswas">
+            <EntityTypeMapping TypeName="WebApiDbModel.Mahasiswa">
+              <MappingFragment StoreEntitySet="Mahasiswa">
+                <ScalarProperty Name="Semester" ColumnName="Semester" />
+                <ScalarProperty Name="IdMahasiswa" ColumnName="IdMahasiswa" />
+                <ScalarProperty Name="NamaMahasiswa" ColumnName="NamaMahasiswa" />
+                <ScalarProperty Name="Nim" ColumnName="Nim" />
+                <ScalarProperty Name="Angkatan" ColumnName="Angkatan" />
+                <ScalarProperty Name="StatusMahasiswa" ColumnName="StatusMahasiswa" />
+                <ScalarProperty Name="Prodi" ColumnName="Prodi" />
+                <ScalarProperty Name="AlamatTinggal" ColumnName="AlamatTinggal" />
+                <ScalarProperty Name="Handphone" ColumnName="Handphone" />
+                <ScalarProperty Name="DosenPembimbing" ColumnName="DosenPembimbing" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="MataKuliahs">
+            <EntityTypeMapping TypeName="WebApiDbModel.MataKuliah">
+              <MappingFragment StoreEntitySet="MataKuliah">
+                <ScalarProperty Name="IdMakul" ColumnName="IdMakul" />
+                <ScalarProperty Name="KodeMakul" ColumnName="KodeMakul" />
+                <ScalarProperty Name="NamaMakul" ColumnName="NamaMakul" />
+                <ScalarProperty Name="Kelas" ColumnName="Kelas" />
+                <ScalarProperty Name="Sks" ColumnName="Sks" />
+                <ScalarProperty Name="Sifat" ColumnName="Sifat" />
+                <ScalarProperty Name="Jadwal" ColumnName="Jadwal" />
+                <ScalarProperty Name="RekomendasiPengambilan" ColumnName="RekomendasiPengambilan" />
+                <ScalarProperty Name="DosenPengajar" ColumnName="DosenPengajar" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Tokens">
+            <EntityTypeMapping TypeName="WebApiDbModel.Token">
+              <MappingFragment StoreEntitySet="Tokens">
+                <ScalarProperty Name="TokenId" ColumnName="TokenId" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="AuthToken" ColumnName="AuthToken" />
+                <ScalarProperty Name="IssuedOn" ColumnName="IssuedOn" />
+                <ScalarProperty Name="ExpiresOn" ColumnName="ExpiresOn" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Users">
+            <EntityTypeMapping TypeName="WebApiDbModel.User">
+              <MappingFragment StoreEntitySet="User">
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
+                <ScalarProperty Name="Password" ColumnName="Password" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ApiKeys">
+            <EntityTypeMapping TypeName="WebApiDbModel.ApiKey">
+              <MappingFragment StoreEntitySet="ApiKey">
+                <ScalarProperty Name="SecretKey" ColumnName="SecretKey" />
+                <ScalarProperty Name="AppId" ColumnName="AppId" />
+                <ScalarProperty Name="Password" ColumnName="Password" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="true" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>
